@@ -8,7 +8,7 @@ Useful UIImage category for getting average color and average content darkness l
 pod 'UIImage+MDContentColor'
 ```
 
-## Usage
+### Usage
 ```objc
 #import "UIImage+MDContentColor.h"
 
