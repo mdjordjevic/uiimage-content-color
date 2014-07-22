@@ -5,11 +5,11 @@
 
 #import "UIImage+MDContentColor.h"
 
-#define kMDRedMultiplier 299
-#define kMDGreenMultiplier 587
-#define kMDBlueMultiplier 114
-#define kMDDarnessDivider 1000
-#define kMDDarnessBorder 125
+static const CGFloat kMDRedMultiplier = 299.0f;
+static const CGFloat kMDGreenMultiplier = 587.0f;
+static const CGFloat kMDBlueMultiplier = 114.0f;
+static const CGFloat kMDDarnessDivider = 1000.0f;
+static const CGFloat kMDDefaultDarknessTheshold = .5f;
 
 @implementation UIImage (MDContentColor)
 
@@ -28,14 +28,24 @@
 
 - (MDContentColor)md_imageContentColor
 {
-    return [UIImage md_contentColorForUIColor:[self md_averageColor]];
+    return [self md_imageContentColorWithDarknessThreshold:kMDDefaultDarknessTheshold];
+}
+
+- (MDContentColor)md_imageContentColorWithDarknessThreshold:(CGFloat)threshold
+{
+    return [UIImage md_contentColorForUIColor:[self md_averageColor] darknessThreshold:threshold];
 }
 
 + (MDContentColor)md_contentColorForUIColor:(UIColor *)color
 {
+    return [self md_contentColorForUIColor:color darknessThreshold:kMDDefaultDarknessTheshold];
+}
+
++ (MDContentColor)md_contentColorForUIColor:(UIColor *)color darknessThreshold:(CGFloat)threshold
+{
     const CGFloat *components = CGColorGetComponents(color.CGColor);
-    CGFloat darknessScore = ((components[0] * 255 * kMDRedMultiplier) + (components[1] * 255 * kMDGreenMultiplier) + (components[2] * 255 * kMDBlueMultiplier)) / kMDDarnessDivider;
-    if (darknessScore >= kMDDarnessBorder) {
+    CGFloat darknessScore = ((components[0] * 255.0f * kMDRedMultiplier) + (components[1] * 255.0f * kMDGreenMultiplier) + (components[2] * 255.0f * kMDBlueMultiplier)) / kMDDarnessDivider;
+    if (darknessScore >= (threshold * 255.0f)) {
         return MDContentColorLight;
     }
     return MDContentColorDark;
